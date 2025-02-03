@@ -391,18 +391,18 @@ class NanoFTIRDataSet:
             self.psd_raw_spec = np.std(np.angle(self.referenced_raw_spec), axis=0)
             self.asd_raw_spec = np.std(np.abs(self.referenced_raw_spec), axis=0)
 
-        mean_psd = np.mean(self.psd_spec[roi])
+        self.mean_psd = np.mean(self.psd_spec[roi])
         mean_asd = np.mean(self.asd_spec[roi])
         print(f'Amplitude noise: {mean_asd:.4f} a.u.')
-        print(f'Phase noise: {mean_psd*1e3:.1f} mrad')
+        print(f'Phase noise: {self.mean_psd*1e3:.1f} mrad')
         if self.balanced_detection:
-            mean_raw_psd = np.mean(self.psd_raw_spec[roi])
+            self.mean_raw_psd = np.mean(self.psd_raw_spec[roi])
             mean_raw_asd = np.mean(self.asd_raw_spec[roi])
             print(f'Raw amplitude noise: {mean_raw_asd:.4f} a.u.')
-            print(f'Raw phase noise: {mean_raw_psd*1e3:.1f} mrad')
+            print(f'Raw phase noise: {self.mean_raw_psd*1e3:.1f} mrad')
 
             self.asd_improv = mean_raw_asd/mean_asd
-            self.psd_improv = mean_raw_psd/mean_psd
+            self.psd_improv = self.mean_raw_psd/self.mean_psd
 
             print(f'Amplitude noise improvement: {self.asd_improv:.2f}')
             print(f'Phase noise improvement: {self.psd_improv:.2f}')
@@ -422,7 +422,7 @@ class NanoFTIRDataSet:
         if self.balanced_detection and comp_plot:
             cmap_blue = plt.cm.Blues(np.linspace(0.5, 1, self.referenced_raw_spec.shape[0]))
             ax[0].plot(self.wavenumbers[roi], np.angle(self.mean_raw_spec[roi]),
-                       label=f'Mean raw PSD: {mean_raw_psd*1e3:.1f} mrad', c='tab:blue')
+                       label=f'Mean raw PSD: {self.mean_raw_psd*1e3:.1f} mrad', c='tab:blue')
             if not plot_indv:
                 ax[0].fill_between(self.wavenumbers[roi], np.angle(self.mean_raw_spec[roi])-self.psd_raw_spec[roi],
                                    np.angle(self.mean_raw_spec[roi])+self.psd_raw_spec[roi],
@@ -433,7 +433,7 @@ class NanoFTIRDataSet:
                                alpha=0.5, lw=1, c=cmap_blue[i])
 
         ax[0].plot(self.wavenumbers[roi], np.angle(self.mean_spec[roi]),
-                   label=f'Mean PSD: {mean_psd*1e3:.1f} mrad', c='tab:orange')
+                   label=f'Mean PSD: {self.mean_psd*1e3:.1f} mrad', c='tab:orange')
         if not plot_indv:
             ax[0].fill_between(self.wavenumbers[roi], np.angle(self.mean_spec[roi])-self.psd_spec[roi],
                                np.angle(self.mean_spec[roi])+self.psd_spec[roi], alpha=0.5, color='tab:orange')
@@ -710,15 +710,16 @@ if __name__ == '__main__':
     #parent_folder = '/Volumes/MYUSB/Felix_Alt_BD/2025-01-11 15982/'
     parent_folder = 'C:/Users/neaspec/Desktop/Felix/SNOM_DATA/250130_Felix_Hyperspec/2025-01-31 16467/'
     parent_folder = 'C:/Users/neaspec/Desktop/Martin/martin202501_PMMA/martin202501/2025-02-01 16473/'
-    parent_folder = 'C:/Users/neaspec/Desktop/Martin/martin202501_PMMA/martin202501e/2025-02-01 16476/'
-    parent_folder = 'C:/Users/neaspec/Desktop/Martin/martin202501_PMMA/martin202501f/2025-02-01 16477/'
-    parent_folder = 'C:/Users/neaspec/Desktop/Felix/SNOM_DATA/250203_Felix_LineScans/2025-02-03 16481/'
+    # parent_folder = 'C:/Users/neaspec/Desktop/Martin/martin202501_PMMA/martin202501e/2025-02-01 16476/'
+    # parent_folder = 'C:/Users/neaspec/Desktop/Martin/martin202501_PMMA/martin202501f/2025-02-01 16477/'
+    # parent_folder = 'C:/Users/neaspec/Desktop/Felix/SNOM_DATA/250203_Felix_LineScans/2025-02-03 16481/'
+    parent_folder = 'C:/Users/neaspec/Desktop/Felix/SNOM_DATA/250203_Felix_LineScans/2025-02-03 16483 LongTimeAuTip/'
 
     # pattern = 'Rng_C_1_Nts_Interleaved_Testing'
     #pattern = 'Rng_C_1_Nts_Standard2'
     # pattern = 'D_2048_T_1C2_A_2'
     pattern = 'check700_avg10'
-    pattern = 'check800_4096_0p8'
+    # pattern = 'check800_4096_0p8'
     pattern = 'Standard_Interleaved_1_Nts'
     # pattern = 'D_2048_T_2C5_A_1'
 
@@ -748,7 +749,7 @@ if __name__ == '__main__':
     lolim, hilim = 1100, 1770
     data.plot_ref_spec(lolim=lolim, hilim=hilim, plot_indv=False, comp_plot=True)
 
-    data.plot_spec(1110, 1550, which='substrate')
+    # data.plot_spec(1110, 1550, which='substrate')
     # data.plot_spec(1100, 1550, which='sample')
     # plt.show()
 
